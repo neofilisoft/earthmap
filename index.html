@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earth Map - Interactive 3D Globe Explorer</title>
+    <title>Earth Map - Google Earth Style 3D Globe</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,16 +19,16 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: #000814;
+            background: #000;
         }
 
-        #canvas {
-            display: block;
+        #renderCanvas {
             width: 100%;
             height: 100%;
+            display: block;
         }
 
-        .ui-overlay {
+        .overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -40,93 +40,33 @@
 
         .header {
             position: fixed;
-            top: 30px;
-            left: 30px;
+            top: 20px;
+            left: 20px;
             pointer-events: auto;
-            z-index: 10;
+            z-index: 20;
+            animation: slideDown 0.5s ease-out;
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
-            letter-spacing: -0.5px;
             margin: 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             color: #ffffff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            letter-spacing: -0.5px;
         }
 
         .header p {
-            font-size: 14px;
-            color: #94a3b8;
-            margin: 8px 0 0 0;
+            font-size: 12px;
+            color: #b0b0b0;
+            margin: 4px 0 0 0;
             font-weight: 400;
         }
 
-        .panel {
-            position: fixed;
-            background-color: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            color: #ffffff;
-            pointer-events: auto;
-            z-index: 10;
-            font-size: 13px;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .panel h3 {
-            margin: 0 0 12px 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: #e2e8f0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .panel ul {
-            margin: 0;
-            padding: 0 0 0 20px;
-            color: #cbd5e1;
-            line-height: 1.8;
-        }
-
-        .panel li {
-            list-style: none;
-            margin-bottom: 6px;
-        }
-
-        .control-panel {
-            bottom: 30px;
-            left: 30px;
-            max-width: 300px;
-            animation-delay: 0.2s;
-        }
-
-        .stats-panel {
-            bottom: 30px;
-            right: 30px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            animation-delay: 0.3s;
-        }
-
-        .stats-panel > div {
-            margin-bottom: 8px;
-            color: #94a3b8;
-        }
-
-        .stat-value {
-            color: #60a5fa;
-            font-weight: 600;
-        }
-
-        @keyframes fadeIn {
+        @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(-20px);
             }
             to {
                 opacity: 1;
@@ -134,380 +74,467 @@
             }
         }
 
-        .loading-screen {
+        .panel {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #000814, #1a3a52);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            flex-direction: column;
-            gap: 20px;
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(15, 23, 42, 0.95));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            color: #ffffff;
+            pointer-events: auto;
+            z-index: 20;
+            font-size: 12px;
+            animation: slideIn 0.5s ease-out;
         }
 
-        .loading-spinner {
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .panel-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 4px 0;
+        }
+
+        .panel-label {
+            color: #94a3b8;
+        }
+
+        .panel-value {
+            color: #60a5fa;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .controls-panel {
+            top: 20px;
+            right: 20px;
+            max-width: 220px;
+            animation-delay: 0.1s;
+        }
+
+        .info-panel {
+            bottom: 20px;
+            left: 20px;
+            max-width: 250px;
+            animation-delay: 0.2s;
+        }
+
+        .info-panel ul {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0 0 0;
+        }
+
+        .info-panel li {
+            padding: 4px 0;
+            color: #cbd5e1;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .info-panel li:before {
+            content: "▸ ";
+            color: #60a5fa;
+            margin-right: 6px;
+        }
+
+        .search-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            max-width: 300px;
+            animation: slideIn 0.5s ease-out;
+            animation-delay: 0.3s;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(31, 41, 55, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            background: rgba(31, 41, 55, 0.95);
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .spinner {
             width: 50px;
             height: 50px;
             border: 3px solid rgba(96, 165, 250, 0.2);
-            border-top: 3px solid #60a5fa;
+            border-top-color: #60a5fa;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .error-screen {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            padding: 40px;
-            color: #ffffff;
-            text-align: center;
-            z-index: 100;
-            max-width: 500px;
-        }
-
-        .error-screen h2 {
-            color: #ef4444;
-            margin-bottom: 15px;
+        .loading p {
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
-            .header h1 { font-size: 24px; }
-            .header p { font-size: 12px; }
-            .panel { padding: 16px; font-size: 12px; }
-            .control-panel { left: 15px; }
-            .stats-panel { right: 15px; }
+            .header h1 { font-size: 22px; }
+            .header p { font-size: 11px; }
+            .panel { padding: 12px; font-size: 11px; }
+            .controls-panel { top: 15px; right: 15px; }
+            .info-panel { bottom: 15px; left: 15px; }
+            .search-box { bottom: 15px; right: 15px; }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 { font-size: 18px; }
+            .panel { padding: 10px; font-size: 10px; }
+            .controls-panel { display: none; }
+            .search-box { bottom: 10px; right: 10px; max-width: 200px; }
         }
     </style>
 </head>
 <body>
-    <div id="loading" class="loading-screen">
-        <div class="loading-spinner"></div>
-        <p style="color: #94a3b8;">Loading Earth Map...</p>
-    </div>
+    <canvas id="renderCanvas"></canvas>
 
-    <div id="error" class="error-screen" style="display: none;">
-        <h2>❌ Error Loading</h2>
-        <p id="error-message"></p>
-    </div>
-
-    <!-- Canvas for Three.js -->
-    <canvas id="canvas"></canvas>
-
-    <!-- UI Overlay -->
-    <div class="ui-overlay">
-        <div class="header">
-            <h1>🌍 Earth Map</h1>
-            <p>Interactive 3D Globe Explorer</p>
+    <div class="overlay">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading Earth Map...</p>
         </div>
 
-        <div class="panel control-panel">
-            <h3>Controls</h3>
+        <div class="header">
+            <h1>🌍 Earth Map</h1>
+            <p>Google Earth Style Explorer</p>
+        </div>
+
+        <div class="panel controls-panel">
+            <h3>Camera Controls</h3>
+            <div class="panel-item">
+                <span class="panel-label">Zoom:</span>
+                <span class="panel-value" id="zoomValue">100%</span>
+            </div>
+            <div class="panel-item">
+                <span class="panel-label">Altitude:</span>
+                <span class="panel-value" id="altitudeValue">1000km</span>
+            </div>
+            <div class="panel-item">
+                <span class="panel-label">Latitude:</span>
+                <span class="panel-value" id="latValue">0°</span>
+            </div>
+            <div class="panel-item">
+                <span class="panel-label">Longitude:</span>
+                <span class="panel-value" id="lonValue">0°</span>
+            </div>
+        </div>
+
+        <div class="panel info-panel">
+            <h3>Instructions</h3>
             <ul>
-                <li>🖱️ Drag to rotate</li>
-                <li>🔍 Scroll to zoom</li>
-                <li>📱 Touch to explore</li>
-                <li>🌐 Double-tap zoom</li>
+                <li>Left Click + Drag to rotate</li>
+                <li>Right Click + Drag to pan</li>
+                <li>Scroll Wheel to zoom</li>
+                <li>Double Click to focus</li>
             </ul>
         </div>
 
-        <div class="panel stats-panel">
-            <div>Zoom: <span class="stat-value" id="zoom-level">1.00x</span></div>
-            <div>Status: <span class="stat-value" id="status">Ready</span></div>
-            <div style="margin-top: 8px; font-size: 11px; color: #475569;">Three.js WebGL</div>
+        <div class="search-box">
+            <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Search location (e.g., Paris, Tokyo)..." 
+                id="searchInput"
+            >
         </div>
     </div>
 
-    <!-- Three.js -->
-    <script src="https://cdn.jsdelivr.net/npm/three@r128/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs@6.0.0/babylon.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs@6.0.0/babylon.loaderPlugin.js"></script>
 
     <script>
-        let zoom = 1;
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-        let rotation = { x: 0, y: 0 };
+        // Initialize Babylon.js
+        const canvas = document.getElementById('renderCanvas');
+        const engine = new BABYLON.Engine(canvas, true);
+        const loading = document.getElementById('loading');
 
-        try {
-            // Get canvas and setup renderer
-            const canvas = document.getElementById('canvas');
-            const loadingScreen = document.getElementById('loading');
-            const errorScreen = document.getElementById('error');
-            const errorMessage = document.getElementById('error-message');
-            const zoomLevel = document.getElementById('zoom-level');
-            const status = document.getElementById('status');
+        // Locations database
+        const locations = {
+            'paris': { lat: 48.8566, lon: 2.3522, name: 'Paris, France' },
+            'tokyo': { lat: 35.6762, lon: 139.6503, name: 'Tokyo, Japan' },
+            'new york': { lat: 40.7128, lon: -74.0060, name: 'New York, USA' },
+            'london': { lat: 51.5074, lon: -0.1278, name: 'London, UK' },
+            'sydney': { lat: -33.8688, lon: 151.2093, name: 'Sydney, Australia' },
+            'dubai': { lat: 25.2048, lon: 55.2708, name: 'Dubai, UAE' },
+            'singapore': { lat: 1.3521, lon: 103.8198, name: 'Singapore' },
+            'bangkok': { lat: 13.7563, lon: 100.5018, name: 'Bangkok, Thailand' },
+            'eiffel tower': { lat: 48.8584, lon: 2.2945, name: 'Eiffel Tower, Paris' },
+            'statue of liberty': { lat: 40.6892, lon: -74.0445, name: 'Statue of Liberty, NYC' },
+        };
 
-            if (!canvas) throw new Error('Canvas element not found');
-            if (!THREE) throw new Error('Three.js failed to load');
+        function createScene() {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(0, 0, 0);
+            scene.collisionsEnabled = true;
 
-            // Setup scene
-            const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x000814);
-
-            // Setup camera
-            const camera = new THREE.PerspectiveCamera(
-                75,
-                window.innerWidth / window.innerHeight,
-                0.1,
-                10000
+            // Camera - Arc Rotate Camera เหมือน Google Earth
+            const camera = new BABYLON.ArcRotateCamera(
+                "Camera",
+                Math.PI / 2,
+                Math.PI / 3,
+                10,
+                new BABYLON.Vector3(0, 0, 0),
+                scene
             );
-            camera.position.z = 2.5;
+            camera.attachControl(canvas, true);
 
-            // Setup renderer
-            const renderer = new THREE.WebGLRenderer({ 
-                canvas: canvas,
-                antialias: true,
-                alpha: true,
-                precision: 'highp',
-                powerPreference: 'high-performance'
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.shadowMap.enabled = true;
+            // Camera controls
+            camera.wheelPrecision = 50;
+            camera.inertia = 0.7;
+            camera.angularSensibilityX = 1000;
+            camera.angularSensibilityY = 1000;
+            camera.panningInertia = 0.9;
 
-            // Create Earth
-            const geometry = new THREE.SphereGeometry(1, 128, 128);
+            // Limits
+            camera.lowerRadiusLimit = 1.2;
+            camera.upperRadiusLimit = 50;
 
-            // Create texture
-            const canvas2d = document.createElement('canvas');
-            canvas2d.width = 4096;
-            canvas2d.height = 2048;
-            const ctx = canvas2d.getContext('2d');
+            // Lights
+            const light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+            light1.intensity = 1;
 
-            // Draw ocean
-            ctx.fillStyle = '#0d47a1';
-            ctx.fillRect(0, 0, canvas2d.width, canvas2d.height);
+            const light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(10, 20, 10), scene);
+            light2.intensity = 0.5;
 
-            // Draw continents
-            ctx.fillStyle = '#2e7d32';
+            // Create Earth sphere
+            const earth = BABYLON.MeshBuilder.CreateSphere("earth", { diameter: 2, segments: 256 }, scene);
+
+            // Create Earth material
+            const earthMaterial = new BABYLON.StandardMaterial("earthMaterial", scene);
+            
+            // Create dynamic texture for Earth with satellite-like appearance
+            const earthTexture = new BABYLON.DynamicTexture("earthTexture", 2048, scene);
+            const ctx = earthTexture.getContext();
+
+            // Fill with ocean color
+            ctx.fillStyle = '#1a5490';
+            ctx.fillRect(0, 0, 2048, 2048);
+
+            // Add continents
+            ctx.fillStyle = '#2a8c3c';
+
+            // Simplified continent shapes
             const continents = [
-                { x: 200, y: 300, w: 500, h: 400 },   // North America
-                { x: 400, y: 700, w: 300, h: 400 },   // South America
-                { x: 1100, y: 200, w: 600, h: 800 },  // Europe & Africa
-                { x: 1800, y: 250, w: 1000, h: 500 }, // Asia
-                { x: 2200, y: 1200, w: 300, h: 250 }, // Australia
-                { x: 0, y: 1800, w: canvas2d.width, h: 248 } // Antarctica
+                // North America
+                { x: 200, y: 400, w: 600, h: 500 },
+                // South America
+                { x: 400, y: 1000, w: 400, h: 500 },
+                // Europe & Africa
+                { x: 1100, y: 300, w: 900, h: 1200 },
+                // Asia
+                { x: 1800, y: 400, w: 1200, h: 700 },
+                // Australia
+                { x: 1900, y: 1500, w: 400, h: 350 },
+                // Antarctica
+                { x: 0, y: 1750, w: 2048, h: 298 }
             ];
-            continents.forEach(cont => ctx.fillRect(cont.x, cont.y, cont.w, cont.h));
 
-            // Draw grid
+            continents.forEach(cont => {
+                ctx.fillRect(cont.x, cont.y, cont.w, cont.h);
+            });
+
+            // Add some details
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            for (let i = 0; i < 50; i++) {
+                const x = Math.random() * 2048;
+                const y = Math.random() * 2048;
+                const size = Math.random() * 50 + 20;
+                ctx.fillRect(x, y, size, size);
+            }
+
+            // Grid lines
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.lineWidth = 1;
-            for (let i = 0; i <= 18; i++) {
-                const y = i * canvas2d.height / 18;
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas2d.width, y);
-                ctx.stroke();
-            }
             for (let i = 0; i <= 36; i++) {
-                const x = i * canvas2d.width / 36;
+                const x = i * 2048 / 36;
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas2d.height);
+                ctx.lineTo(x, 2048);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= 18; i++) {
+                const y = i * 2048 / 18;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(2048, y);
                 ctx.stroke();
             }
 
-            // Draw clouds
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-            for (let i = 0; i < 30; i++) {
-                const x = Math.random() * canvas2d.width;
-                const y = Math.random() * canvas2d.height;
-                const size = Math.random() * 100 + 50;
-                ctx.beginPath();
-                ctx.arc(x, y, size, 0, Math.PI * 2);
-                ctx.fill();
+            earthTexture.update();
+
+            earthMaterial.emissiveTexture = earthTexture;
+            earthMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            earth.material = earthMaterial;
+
+            // Atmosphere glow
+            const glowLayer = new BABYLON.GlowLayer("glow", scene);
+            glowLayer.addIncludedOnlyMesh(earth);
+            glowLayer.intensity = 0.5;
+
+            // Stars background
+            const starfield = BABYLON.MeshBuilder.CreateSphere("starfield", { diameter: 200, segments: 64 }, scene);
+            const starMaterial = new BABYLON.StandardMaterial("starMaterial", scene);
+            const starTexture = new BABYLON.DynamicTexture("starTexture", 1024, scene);
+            const starCtx = starTexture.getContext();
+            
+            starCtx.fillStyle = '#000000';
+            starCtx.fillRect(0, 0, 1024, 1024);
+            starCtx.fillStyle = '#ffffff';
+            for (let i = 0; i < 500; i++) {
+                const x = Math.random() * 1024;
+                const y = Math.random() * 1024;
+                const size = Math.random() * 2;
+                starCtx.fillRect(x, y, size, size);
+            }
+            starTexture.update();
+
+            starMaterial.emissiveTexture = starTexture;
+            starfield.material = starMaterial;
+
+            return { scene, camera, earth };
+        }
+
+        async function main() {
+            const { scene, camera, earth } = createScene();
+
+            // Variables for tracking
+            let currentZoom = 100;
+            let currentAltitude = 1000;
+
+            // Update position display
+            function updateDisplay() {
+                const sphericalCoordinates = BABYLON.Vector3.Zero().subtract(camera.target).normalize();
+                const lat = Math.asin(sphericalCoordinates.y) * 180 / Math.PI;
+                const lon = Math.atan2(sphericalCoordinates.x, sphericalCoordinates.z) * 180 / Math.PI;
+
+                currentZoom = Math.round(100 / camera.radius);
+                currentAltitude = Math.round((camera.radius - 1) * 1000);
+
+                document.getElementById('zoomValue').textContent = currentZoom + '%';
+                document.getElementById('altitudeValue').textContent = currentAltitude + 'km';
+                document.getElementById('latValue').textContent = lat.toFixed(2) + '°';
+                document.getElementById('lonValue').textContent = lon.toFixed(2) + '°';
             }
 
-            const texture = new THREE.CanvasTexture(canvas2d);
-            texture.anisotropy = renderer.capabilities.maxAnisotropy;
+            // Fly to location
+            function flyToLocation(lat, lon, zoom = 0.3) {
+                const radLat = lat * Math.PI / 180;
+                const radLon = lon * Math.PI / 180;
 
-            const material = new THREE.MeshStandardMaterial({
-                map: texture,
-                roughness: 0.8,
-                metalness: 0.1,
-                emissive: 0x1a3a52,
-                emissiveIntensity: 0.2
-            });
+                const target = new BABYLON.Vector3(
+                    Math.cos(radLat) * Math.sin(radLon),
+                    Math.sin(radLat),
+                    Math.cos(radLat) * Math.cos(radLon)
+                );
 
-            const globe = new THREE.Mesh(geometry, material);
-            globe.castShadow = true;
-            globe.receiveShadow = true;
-            scene.add(globe);
+                camera.target = target;
+                camera.radius = zoom;
 
-            // Atmosphere
-            const atmosphereGeometry = new THREE.SphereGeometry(1.05, 64, 64);
-            const atmosphereMaterial = new THREE.MeshPhongMaterial({
-                color: 0x4da6ff,
-                emissive: 0x003d82,
-                emissiveIntensity: 0.2,
-                transparent: true,
-                opacity: 0.1,
-                side: THREE.BackSide
-            });
-            const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
-            scene.add(atmosphere);
-
-            // Stars
-            const starsGeometry = new THREE.BufferGeometry();
-            const starsPositions = new Float32Array();
-            for (let i = 0; i < 2000; i++) {
-                starsPositions.push(
-                    (Math.random() - 0.5) * 200,
-                    (Math.random() - 0.5) * 200,
-                    (Math.random() - 0.5) * 200
+                // Smooth animation
+                BABYLON.Animation.CreateAndStartAnimation(
+                    "FlyTo",
+                    camera,
+                    "radius",
+                    60,
+                    30,
+                    camera.radius,
+                    zoom,
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
                 );
             }
-            starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
-            const stars = new THREE.Points(
-                starsGeometry,
-                new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, sizeAttenuation: true })
-            );
-            scene.add(stars);
 
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 3, 5);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
-
-            const pointLight = new THREE.PointLight(0x4da6ff, 0.3);
-            pointLight.position.set(-5, -3, -5);
-            scene.add(pointLight);
-
-            // Event listeners
-            canvas.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                previousMousePosition = { x: e.clientX, y: e.clientY };
-            });
-
-            canvas.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                
-                const deltaX = e.clientX - previousMousePosition.x;
-                const deltaY = e.clientY - previousMousePosition.y;
-
-                rotation.y += deltaX * 0.005;
-                rotation.x += deltaY * 0.005;
-                rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.x));
-
-                globe.rotation.y = rotation.y;
-                globe.rotation.x = rotation.x;
-                atmosphere.rotation.copy(globe.rotation);
-
-                previousMousePosition = { x: e.clientX, y: e.clientY };
-            });
-
-            canvas.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-
-            canvas.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                zoom += e.deltaY > 0 ? 0.1 : -0.1;
-                zoom = Math.max(0.5, Math.min(3, zoom));
-                zoomLevel.textContent = zoom.toFixed(2) + 'x';
-            });
-
-            // Touch support
-            let touchStartDistance = 0;
-
-            canvas.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 2) {
-                    const dx = e.touches[0].clientX - e.touches[1].clientX;
-                    const dy = e.touches[0].clientY - e.touches[1].clientY;
-                    touchStartDistance = Math.sqrt(dx * dx + dy * dy);
-                } else if (e.touches.length === 1) {
-                    isDragging = true;
-                    previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = e.target.value.toLowerCase();
+                    const location = locations[query];
+                    
+                    if (location) {
+                        flyToLocation(location.lat, location.lon, 0.3);
+                        e.target.value = '';
+                    } else {
+                        alert('Location not found. Try: Paris, Tokyo, New York, London, Sydney, Dubai, Bangkok, etc.');
+                    }
                 }
             });
 
-            canvas.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 2) {
-                    const dx = e.touches[0].clientX - e.touches[1].clientX;
-                    const dy = e.touches[0].clientY - e.touches[1].clientY;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const delta = distance - touchStartDistance;
-                    zoom += delta > 0 ? -0.1 : 0.1;
-                    zoom = Math.max(0.5, Math.min(3, zoom));
-                    zoomLevel.textContent = zoom.toFixed(2) + 'x';
-                    touchStartDistance = distance;
-                } else if (e.touches.length === 1 && isDragging) {
-                    const deltaX = e.touches[0].clientX - previousMousePosition.x;
-                    const deltaY = e.touches[0].clientY - previousMousePosition.y;
-
-                    rotation.y += deltaX * 0.005;
-                    rotation.x += deltaY * 0.005;
-                    rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.x));
-
-                    globe.rotation.y = rotation.y;
-                    globe.rotation.x = rotation.x;
-                    atmosphere.rotation.copy(globe.rotation);
-
-                    previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                }
-            });
-
-            canvas.addEventListener('touchend', () => {
-                isDragging = false;
-            });
-
-            // Window resize
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+            // Double click to focus
+            canvas.addEventListener('dblclick', () => {
+                flyToLocation(0, 0, 5);
             });
 
             // Animation loop
-            function animate() {
-                requestAnimationFrame(animate);
+            engine.runRenderLoop(() => {
+                updateDisplay();
+                scene.render();
+            });
 
-                if (!isDragging) {
-                    rotation.y += 0.0001;
-                    globe.rotation.y = rotation.y;
-                    atmosphere.rotation.y = rotation.y;
-                }
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                engine.resize();
+            });
 
-                camera.position.z = 2.5 / zoom;
-
-                renderer.render(scene, camera);
-            }
-
-            // Hide loading screen
+            // Hide loading
             setTimeout(() => {
-                loadingScreen.style.display = 'none';
-                status.textContent = 'Running';
-                status.style.color = '#10b981';
-            }, 500);
-
-            // Start animation
-            animate();
-
-        } catch (error) {
-            console.error('Error:', error);
-            const errorScreen = document.getElementById('error');
-            const errorMessage = document.getElementById('error-message');
-            const loadingScreen = document.getElementById('loading');
-            
-            loadingScreen.style.display = 'none';
-            errorScreen.style.display = 'block';
-            errorMessage.textContent = error.message;
+                loading.style.display = 'none';
+            }, 1500);
         }
+
+        main().catch(console.error);
     </script>
 </body>
 </html>
